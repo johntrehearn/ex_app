@@ -1,3 +1,5 @@
+
+
 interface Data {
   conversion_rates: Record<string, number>;
 }
@@ -59,22 +61,81 @@ class FetchWrapper {
 // TODO: WRITE YOUR TYPESCRIPT CODE HERE
 
 // A global variable that references the HTML select element with the id base-currency
+
+let baseCurrency = document.getElementById('base-currency') as HTMLSelectElement;
 // A global variable that references the HTML select element with the id target-currency
+
+let targetCurrency = document.getElementById('target-currency') as HTMLSelectElement;
 // A global variable that references the HTML paragraph element with the id conversion-result
+
+let conversion = document.getElementById('conversion-result') as HTMLParagraphElement;
+
 // A global variable that stores the conversion rates for each currency pair as an array of arrays
 
+let conversionRatesArray: [string, number][] = [];
+
 // An instance of the FetchWrapper class with the base URL of the API
+
+let baseApi = new FetchWrapper(`https://v6.exchangerate-api.com/v6/`);
+
+
+
+
+
 // A constant that stores the API key for authentication
 
+let apiKey: string = 'a38b0f509eae72974756b698';
+
+
 // A call to the get method of the API instance with the endpoint that requests the latest conversion rates for the USD currency
+
 // Assign the conversion_rates property of the response data to the rates variable
 
 // Add an event listener to the base element that invokes the getConversionRates function when the user selects a new value
 // base.addEventListener('change', getConversionRates);
 // Add an event listener to the target element that invokes the getConversionRates function when the user selects a new value
 
+
+
+
+baseApi.get(`${apiKey}/latest/USD`).then((data: any) => {
+  console.log(data);
+  conversionRatesArray = Object.entries(data.conversion_rates);
+  console.log(conversionRatesArray);
+  baseCurrency.addEventListener('change', getConversionRates);
+  targetCurrency.addEventListener('change', getConversionRates);
+});
+
+
+
+
 // A function that performs the currency conversion and updates the UI
+
+function getConversionRates() {
+  let result = document.getElementById('conversion-result');
+  if (result) {
+    let baseCurrencyValue = baseCurrency.value;
+    let targetCurrencyValue = targetCurrency.value;
+    for (let i = 0; i < conversionRatesArray.length; i++) {
+      console.log("Country", conversionRatesArray[i][0]);
+      console.log("Country", conversionRatesArray[i][1]);
+      console.log("value", targetCurrency.value);
+      if (conversionRatesArray[i][0] === targetCurrency.value) {
+        result.textContent = `1 ${baseCurrencyValue} = ${conversionRatesArray[i][1]} ${targetCurrencyValue}`;
+      }
+    }
+  }
+}
+
+getConversionRates();
 
 // Iterate over the rates array and find the rate that matches the target currency value
 // If the currency name matches the target currency value
 // Assign the conversion rate to the textContent property of the result element, which displays it on the web page
+
+let result = document.querySelector('#conversion-result');
+
+if (result) {
+  result.textContent = targetCurrency.value;
+}
+
